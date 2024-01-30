@@ -1,57 +1,43 @@
 # frozen_string_literal: true
 
-lib = File.expand_path("lib", __dir__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require_relative "lib/sidekiq_alive/version"
 
-require "sidekiq_alive/version"
+Gem::Specification.new do |s|
+  s.name        = "sidekiq_alive"
+  s.version     = SidekiqAlive::VERSION
+  s.platform    = Gem::Platform::RUBY
+  s.authors     = ["Andrejs Cunskis", "Artur Pañach"]
+  s.email       = ["andrejs.cunskis@gmail.com", "arturictus@gmail.com"]
+  s.homepage    = "https://github.com/arturictus/sidekiq_alive"
+  s.summary     = "Liveness probe for sidekiq on Kubernetes deployments."
+  s.description = "SidekiqAlive offers a solution to add liveness probe of a Sidekiq instance."
+  s.license     = "MIT"
 
-Gem::Specification.new do |spec|
-  spec.name          = "sidekiq_alive"
-  spec.authors       = ["Andrejs Cunskis", "Artur Pañach"]
-  spec.email         = ["andrejs.cunskis@gmail.com", "arturictus@gmail.com"]
-
-  spec.version       = SidekiqAlive::VERSION
-
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
-
-  spec.homepage      = "https://github.com/arturictus/sidekiq_alive"
-  spec.summary       = "Liveness probe for sidekiq on Kubernetes deployments."
-  spec.license       = "MIT"
-  spec.description   = <<~DSC
-    SidekiqAlive offers a solution to add liveness probe of a Sidekiq instance.
-
-    How?
-
-    A http server is started and on each requests validates that a liveness key is stored in Redis. If it is there means is working.
-
-    A Sidekiq job is the responsable to storing this key. If Sidekiq stops processing jobs
-    this key gets expired by Redis an consequently the http server will return a 500 error.
-
-    This Job is responsible to requeue itself for the next liveness probe.
-  DSC
-
-  spec.metadata = {
-    "homepage_uri" => spec.homepage,
-    "source_code_uri" => spec.homepage,
-    "changelog_uri" => "#{spec.homepage}/releases",
-    "documentation_uri" => "#{spec.homepage}/blob/v#{spec.version}/README.md",
-    "bug_tracker_uri" => "#{spec.homepage}/issues",
+  s.metadata = {
+    "homepage_uri"      => s.homepage,
+    "source_code_uri"   => s.homepage,
+    "changelog_uri"     => "#{s.homepage}/releases",
+    "documentation_uri" => "#{s.homepage}/blob/v#{s.version}/README.md",
+    "bug_tracker_uri"   => "#{s.homepage}/issues",
   }
 
-  spec.files         = Dir["README.md", "lib/**/*"]
-  spec.require_paths = ["lib"]
+  s.required_ruby_version = '>= 3.0.0'
 
-  spec.add_development_dependency("bundler", "> 1.16")
-  spec.add_development_dependency("debug", "~> 1.6")
-  spec.add_development_dependency("rack-test", "~> 2.1.0")
-  spec.add_development_dependency("rake", "~> 13.0")
-  spec.add_development_dependency("rspec", "~> 3.0")
-  spec.add_development_dependency("rspec-sidekiq", "~> 4.0")
-  spec.add_development_dependency("rubocop-shopify", "~> 2.10")
-  spec.add_development_dependency("solargraph", "~> 0.49.0")
+  s.files = Dir["README.md", "lib/**/*"]
 
-  spec.add_dependency("rack", ">= 2.2.4")
-  spec.add_dependency("rackup")
-  spec.add_dependency("sidekiq", ">= 5", "< 8")
-  spec.add_dependency("webrick", ">= 1", "< 2")
+  s.add_runtime_dependency("rack", ">= 2.2.4")
+  s.add_runtime_dependency("rackup")
+  s.add_runtime_dependency("sidekiq", ">= 5", "< 8")
+  s.add_runtime_dependency("webrick", ">= 1", "< 2")
+
+  s.add_development_dependency("debug", "~> 1.6")
+  s.add_development_dependency("rack-test", "~> 2.1.0")
+  s.add_development_dependency("rake", "~> 13.0")
+  s.add_development_dependency("rspec")
+  s.add_development_dependency("rspec-sidekiq")
+  s.add_development_dependency("rubocop-shopify")
+  s.add_development_dependency("ruby-lsp")
+  s.add_development_dependency("simplecov")
+  s.add_development_dependency("simplecov-cobertura")
+  s.add_development_dependency("solargraph")
 end
