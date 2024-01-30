@@ -2,10 +2,10 @@
 
 require "simplecov"
 SimpleCov.start
+
 require "simplecov-cobertura"
 SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 
-require "bundler/setup"
 require "sidekiq_alive"
 require "rspec-sidekiq"
 require "rack/test"
@@ -26,6 +26,9 @@ RSpec.configure do |config|
   config.expect_with(:rspec) do |c|
     c.syntax = :expect
   end
+
+  config.order = :random
+  Kernel.srand config.seed
 
   config.before do
     Sidekiq.redis(&:flushall)

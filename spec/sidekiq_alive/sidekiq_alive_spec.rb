@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 begin
   # this is needed for spec to work with sidekiq >7
   require "sidekiq/capsule"

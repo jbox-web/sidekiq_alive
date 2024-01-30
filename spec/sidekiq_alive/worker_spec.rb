@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe(SidekiqAlive::Worker) do
   context "When being executed in the same instance" do
     subject do

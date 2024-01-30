@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spec_helper"
+
 RSpec.describe(SidekiqAlive::Redis) do
   let(:redis) { SidekiqAlive::Redis.adapter }
 
