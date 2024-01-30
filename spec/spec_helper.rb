@@ -28,7 +28,7 @@ RSpec.configure do |config|
   end
 
   config.order = :random
-  Kernel.srand config.seed
+  Kernel.srand(config.seed)
 
   config.before do
     Sidekiq.redis(&:flushall)

@@ -14,14 +14,14 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
 
   s.metadata = {
-    "homepage_uri"      => s.homepage,
-    "source_code_uri"   => s.homepage,
-    "changelog_uri"     => "#{s.homepage}/releases",
+    "homepage_uri" => s.homepage,
+    "source_code_uri" => s.homepage,
+    "changelog_uri" => "#{s.homepage}/releases",
     "documentation_uri" => "#{s.homepage}/blob/v#{s.version}/README.md",
-    "bug_tracker_uri"   => "#{s.homepage}/issues",
+    "bug_tracker_uri" => "#{s.homepage}/issues",
   }
 
-  s.required_ruby_version = '>= 3.0.0'
+  s.required_ruby_version = ">= 3.0.0"
 
   s.files = Dir["README.md", "lib/**/*"]
 
