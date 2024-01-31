@@ -2,7 +2,7 @@
 
 require "singleton"
 
-require "rack"
+require "rackup"
 require "sidekiq"
 require "sidekiq/api"
 
