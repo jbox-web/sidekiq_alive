@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("rackup")
   s.add_runtime_dependency("sidekiq", ">= 5", "< 8")
   s.add_runtime_dependency("webrick", ">= 1", "< 2")
+  s.add_runtime_dependency("zeitwerk")
 
   s.add_development_dependency("debug", "~> 1.6")
   s.add_development_dependency("rack-test", "~> 2.1.0")

@@ -9,7 +9,3 @@ module SidekiqAlive
     end
   end
 end
-
-require_relative "redis/base"
-require_relative "redis/redis_client_gem"
-require_relative "redis/redis_gem"

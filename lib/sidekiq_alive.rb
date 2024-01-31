@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
+require "singleton"
+
+require "rack"
 require "sidekiq"
 require "sidekiq/api"
-require "singleton"
-require "sidekiq_alive/version"
-require "sidekiq_alive/config"
-require "sidekiq_alive/helpers"
-require "sidekiq_alive/redis"
+
+require "zeitwerk"
+loader = Zeitwerk::Loader.for_gem
+loader.setup
 
 module SidekiqAlive
   HOSTNAME_REGISTRY = "sidekiq-alive-hostnames"
@@ -168,8 +170,5 @@ module SidekiqAlive
     end
   end
 end
-
-require "sidekiq_alive/worker"
-require "sidekiq_alive/server"
 
 SidekiqAlive.start unless ENV.fetch("DISABLE_SIDEKIQ_ALIVE", "").casecmp("true").zero?

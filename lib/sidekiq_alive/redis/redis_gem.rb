@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "base"
-
 module SidekiqAlive
   module Redis
     # Wrapper for `redis` gem used by sidekiq < 7
