@@ -130,7 +130,7 @@ module SidekiqAlive
     end
 
     def hostname
-      ENV["HOSTNAME"] || "HOSTNAME_NOT_SET"
+      ENV['SIDEKIQ_ALIVE_HOSTNAME'] || ENV["HOSTNAME"] || "HOSTNAME_NOT_SET"
     end
 
     def shutdown_info
