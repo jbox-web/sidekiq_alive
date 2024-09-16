@@ -11,32 +11,32 @@ module SidekiqAlive
         @capsule = Sidekiq.default_configuration.capsules[CAPSULE_NAME]
       end
 
-      def set(key, time:, ex:)
-        redis { |r| r.call("SET", key, time, ex: ex) }
+      def set(key, time:, ex:) # rubocop:disable Naming/MethodParameterName
+        redis { |r| r.call('SET', key, time, ex: ex) }
       end
 
       def get(key)
-        redis { |r| r.call("GET", key) }
+        redis { |r| r.call('GET', key) }
       end
 
-      def zadd(set_key, ex, key)
-        redis { |r| r.call("ZADD", set_key, ex, key) }
+      def zadd(set_key, ex, key) # rubocop:disable Naming/MethodParameterName
+        redis { |r| r.call('ZADD', set_key, ex, key) }
       end
 
       def zrange(set_key, start, stop)
-        redis { |r| r.call("ZRANGE", set_key, start, stop) }
+        redis { |r| r.call('ZRANGE', set_key, start, stop) }
       end
 
       def zrangebyscore(set_key, min, max)
-        redis { |r| r.call("ZRANGEBYSCORE", set_key, min, max) }
+        redis { |r| r.call('ZRANGEBYSCORE', set_key, min, max) }
       end
 
       def zrem(set_key, key)
-        redis { |r| r.call("ZREM", set_key, key) }
+        redis { |r| r.call('ZREM', set_key, key) }
       end
 
       def delete(key)
-        redis { |r| r.call("DEL", key) }
+        redis { |r| r.call('DEL', key) }
       end
 
       private

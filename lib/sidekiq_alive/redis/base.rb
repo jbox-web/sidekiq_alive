@@ -7,7 +7,7 @@ module SidekiqAlive
         raise(NotImplementedError)
       end
 
-      def zadd(set_key, ex, key)
+      def zadd(set_key, ex, key) # rubocop:disable Naming/MethodParameterName
         raise(NotImplementedError)
       end
 

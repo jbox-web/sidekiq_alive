@@ -6,7 +6,7 @@ module SidekiqAlive
       def run!
         handler = Rackup::Handler.get(server)
 
-        Signal.trap("TERM") { handler.shutdown }
+        Signal.trap('TERM') { handler.shutdown }
 
         handler.run(self, Port: port, Host: host, AccessLog: [], Logger: SidekiqAlive.logger)
       end
@@ -29,9 +29,9 @@ module SidekiqAlive
 
       def call(env)
         if Rack::Request.new(env).path != path
-          [404, {}, ["Not found"]]
+          [404, {}, ['Not found']]
         elsif SidekiqAlive.alive?
-          [200, {}, ["Alive!"]]
+          [200, {}, ['Alive!']]
         else
           response = "Can't find the alive key"
           SidekiqAlive.logger.error(response)

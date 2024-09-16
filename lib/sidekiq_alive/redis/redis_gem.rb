@@ -5,7 +5,7 @@ module SidekiqAlive
     # Wrapper for `redis` gem used by sidekiq < 7
     # https://github.com/redis/redis-rb
     class RedisGem < Base
-      def set(key, time:, ex:)
+      def set(key, time:, ex:) # rubocop:disable Naming/MethodParameterName
         redis { |r| r.set(key, time, ex: ex) }
       end
 
@@ -13,7 +13,7 @@ module SidekiqAlive
         redis { |r| r.get(key) }
       end
 
-      def zadd(set_key, ex, key)
+      def zadd(set_key, ex, key) # rubocop:disable Naming/MethodParameterName
         redis { |r| r.zadd(set_key, ex, key) }
       end
 

@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
-require "singleton"
+require 'singleton'
 
-require "rackup"
-require "sidekiq"
-require "sidekiq/api"
+require 'rackup'
+require 'sidekiq'
+require 'sidekiq/api'
 
-require "zeitwerk"
+require 'zeitwerk'
 loader = Zeitwerk::Loader.for_gem
 loader.setup
 
-module SidekiqAlive
-  HOSTNAME_REGISTRY = "sidekiq-alive-hostnames"
-  CAPSULE_NAME = "sidekiq-alive"
+module SidekiqAlive # rubocop:disable Metrics/ModuleLength
+  HOSTNAME_REGISTRY = 'sidekiq-alive-hostnames'
+  CAPSULE_NAME = 'sidekiq-alive'
 
   class << self
-    def start
-      Sidekiq.configure_server do |sq_config|
+    def start # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      Sidekiq.configure_server do |sq_config| # rubocop:disable Metrics/BlockLength
         sq_config.on(:startup) do
           SidekiqAlive::Worker.sidekiq_options(queue: current_queue)
 
@@ -47,7 +47,7 @@ module SidekiqAlive
         end
 
         sq_config.on(:shutdown) do
-          Process.kill("TERM", @server_pid) unless @server_pid.nil?
+          Process.kill('TERM', @server_pid) unless @server_pid.nil?
           Process.wait(@server_pid) unless @server_pid.nil?
 
           unregister_current_instance
@@ -77,13 +77,15 @@ module SidekiqAlive
       redis.zrange(HOSTNAME_REGISTRY, 0, -1)
     end
 
-    def purge_pending_jobs
+    def purge_pending_jobs # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       schedule_set = Sidekiq::ScheduledSet.new
-      jobs = if Helpers.sidekiq_5
-        schedule_set.select { |job| job.klass == "SidekiqAlive::Worker" && job.queue == current_queue }
-      else
-        schedule_set.scan('"class":"SidekiqAlive::Worker"').select { |job| job.queue == current_queue }
-      end
+      jobs =
+        if Helpers.sidekiq_5
+          schedule_set.select { |job| job.klass == 'SidekiqAlive::Worker' && job.queue == current_queue }
+        else
+          schedule_set.scan('"class":"SidekiqAlive::Worker"').select { |job| job.queue == current_queue }
+        end
+
       logger.info("[SidekiqAlive] Purging #{jobs.count} pending for #{hostname}")
       jobs.each(&:delete)
 
@@ -130,11 +132,11 @@ module SidekiqAlive
     end
 
     def hostname
-      ENV['SIDEKIQ_ALIVE_HOSTNAME'] || ENV["HOSTNAME"] || "HOSTNAME_NOT_SET"
+      ENV['SIDEKIQ_ALIVE_HOSTNAME'] || ENV['HOSTNAME'] || 'HOSTNAME_NOT_SET'
     end
 
     def shutdown_info
-      "Shutting down sidekiq-alive!"
+      'Shutting down sidekiq-alive!'
     end
 
     def startup_info
@@ -152,7 +154,7 @@ module SidekiqAlive
     end
 
     def successful_startup_text
-      "Successfully started sidekiq-alive, registered with key: "\
+      'Successfully started sidekiq-alive, registered with key: ' \
         "#{current_instance_register_key} on set #{HOSTNAME_REGISTRY}"
     end
 
@@ -171,4 +173,4 @@ module SidekiqAlive
   end
 end
 
-SidekiqAlive.start unless ENV.fetch("DISABLE_SIDEKIQ_ALIVE", "").casecmp("true").zero?
+SidekiqAlive.start unless ENV.fetch('DISABLE_SIDEKIQ_ALIVE', '').casecmp('true').zero?

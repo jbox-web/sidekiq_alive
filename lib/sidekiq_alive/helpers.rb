@@ -3,24 +3,24 @@
 module SidekiqAlive
   module Helpers
     class << self
-      def sidekiq_7
-        current_sidekiq_version >= Gem::Version.new("7")
+      def sidekiq_7 # rubocop:disable Naming/VariableNumber
+        current_sidekiq_version >= Gem::Version.new('7')
       end
 
-      def sidekiq_6
-        current_sidekiq_version >= Gem::Version.new("6") &&
-          current_sidekiq_version < Gem::Version.new("7")
+      def sidekiq_6 # rubocop:disable Naming/VariableNumber
+        current_sidekiq_version >= Gem::Version.new('6') &&
+          current_sidekiq_version < Gem::Version.new('7')
       end
 
-      def sidekiq_5
-        current_sidekiq_version >= Gem::Version.new("5") &&
-          current_sidekiq_version < Gem::Version.new("6")
+      def sidekiq_5 # rubocop:disable Naming/VariableNumber
+        current_sidekiq_version >= Gem::Version.new('5') &&
+          current_sidekiq_version < Gem::Version.new('6')
       end
 
       private
 
       def current_sidekiq_version
-        Gem.loaded_specs["sidekiq"].version
+        Gem.loaded_specs['sidekiq'].version
       end
     end
   end

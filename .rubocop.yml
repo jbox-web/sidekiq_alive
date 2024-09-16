@@ -1,15 +1,34 @@
-inherit_gem:
-  rubocop-shopify: rubocop.yml
+---
+require:
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 3.0
-  SuggestExtensions: false
   NewCops: enable
-
-Layout/ArgumentAlignment:
-  Enabled: true
-  EnforcedStyle: with_first_argument
-
-Style/InvertibleUnlessCondition:
+  TargetRubyVersion: 3.0
   Exclude:
-    - "lib/sidekiq_alive.rb"
+    - bin/*
+    - spec/**/*
+
+Gemspec/RequireMFA:
+  Enabled: false
+
+#########
+# STYLE #
+#########
+
+Style/Documentation:
+  Enabled: false
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Metrics/ModuleLength:
+  Max: 120
+
+Metrics/ClassLength:
+  Max: 120
