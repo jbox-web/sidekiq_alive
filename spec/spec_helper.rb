@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 require 'simplecov'
-SimpleCov.start
 
-require 'simplecov-cobertura'
-SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
+# Start SimpleCov
+SimpleCov.start do
+  add_filter 'spec/'
+end
 
 require 'sidekiq_alive'
 require 'rspec-sidekiq'
 require 'rack/test'
-require 'debug'
 
 ENV['RACK_ENV'] = 'test'
 ENV['HOSTNAME'] = 'test-hostname'

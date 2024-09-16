@@ -13,9 +13,3 @@ gem 'rubocop-performance'
 gem 'rubocop-rake'
 gem 'rubocop-rspec'
 gem 'simplecov'
-gem 'simplecov-cobertura'
-gem 'solargraph'
-
-platforms :mri do
-  gem 'debug'
-end
