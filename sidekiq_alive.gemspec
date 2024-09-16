@@ -25,20 +25,9 @@ Gem::Specification.new do |s|
 
   s.files = Dir["README.md", "lib/**/*"]
 
-  s.add_runtime_dependency("rack", ">= 2.2.4")
-  s.add_runtime_dependency("rackup")
-  s.add_runtime_dependency("sidekiq", ">= 5", "< 8")
-  s.add_runtime_dependency("webrick", ">= 1", "< 2")
-  s.add_runtime_dependency("zeitwerk")
-
-  s.add_development_dependency("debug", "~> 1.6")
-  s.add_development_dependency("rack-test", "~> 2.1.0")
-  s.add_development_dependency("rake", "~> 13.0")
-  s.add_development_dependency("rspec")
-  s.add_development_dependency("rspec-sidekiq")
-  s.add_development_dependency("rubocop-shopify")
-  s.add_development_dependency("ruby-lsp")
-  s.add_development_dependency("simplecov")
-  s.add_development_dependency("simplecov-cobertura")
-  s.add_development_dependency("solargraph")
+  s.add_dependency("rack", ">= 2.2.4")
+  s.add_dependency("rackup")
+  s.add_dependency("sidekiq", ">= 5", "< 8")
+  s.add_dependency("webrick", ">= 1", "< 2")
+  s.add_dependency("zeitwerk")
 end
