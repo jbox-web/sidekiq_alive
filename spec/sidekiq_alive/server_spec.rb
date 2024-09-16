@@ -8,23 +8,16 @@ RSpec.describe(SidekiqAlive::Server) do
   subject(:app) { described_class }
 
   describe '#run!' do
-    subject { app.run! }
+    subject(:app_run) { app.run! }
 
     before { allow(Rackup::Handler).to(receive(:get).with('webrick').and_return(fake_webrick)) }
 
     let(:fake_webrick) { double }
 
     it 'runs the handler with sidekiq_alive logger, host and no access logs' do
-      expect(fake_webrick).to(receive(:run).with(
-        described_class,
-        hash_including(
-          Logger: SidekiqAlive.logger,
-          Host: '0.0.0.0',
-          AccessLog: [],
-        ),
-      ))
+      expect(fake_webrick).to receive(:run).with(described_class, hash_including(Logger: SidekiqAlive.logger, Host: '0.0.0.0', AccessLog: []))
 
-      subject
+      app_run
     end
 
     context 'when we change the host config' do
@@ -38,26 +31,22 @@ RSpec.describe(SidekiqAlive::Server) do
       end
 
       it 'respects the SIDEKIQ_ALIVE_HOST environment variable' do
-        expect(fake_webrick).to(receive(:run).with(
-          described_class,
-          hash_including(Host: '1.2.3.4'),
-        ))
-
-        subject
+        expect(fake_webrick).to receive(:run).with(described_class, hash_including(Host: '1.2.3.4'))
+        app_run
       end
     end
   end
 
   describe 'responses' do
     it 'responds with success when the service is alive' do
-      allow(SidekiqAlive).to(receive(:alive?) { true })
+      allow(SidekiqAlive).to(receive(:alive?).and_return(true))
       get '/'
       expect(last_response).to(be_ok)
       expect(last_response.body).to(eq('Alive!'))
     end
 
     it 'responds with an error when the service is not alive' do
-      allow(SidekiqAlive).to(receive(:alive?) { false })
+      allow(SidekiqAlive).to(receive(:alive?).and_return(false))
       get '/'
       expect(last_response).not_to(be_ok)
       expect(last_response.body).to(eq("Can't find the alive key"))
@@ -131,7 +120,7 @@ RSpec.describe(SidekiqAlive::Server) do
     end
 
     it 'responds ok to the given path' do
-      allow(SidekiqAlive).to(receive(:alive?) { true })
+      allow(SidekiqAlive).to(receive(:alive?).and_return(true))
       get '/sidekiq-probe'
       expect(last_response).to(be_ok)
     end

@@ -9,7 +9,6 @@ AllCops:
   TargetRubyVersion: 3.0
   Exclude:
     - bin/*
-    - spec/**/*
 
 Gemspec/RequireMFA:
   Enabled: false
@@ -27,8 +26,32 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
 
+##########
+# LAYOUT #
+##########
+
+Layout/LineLength:
+  Max: 150
+
+###########
+# METRICS #
+###########
+
 Metrics/ModuleLength:
   Max: 120
 
 Metrics/ClassLength:
   Max: 120
+
+#########
+# RSPEC #
+#########
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/ExampleLength:
+  Max: 9
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive
