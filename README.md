@@ -1,10 +1,10 @@
 # SidekiqAlive
 
-[![Gem Version](https://badge.fury.io/rb/sidekiq_alive.svg)](https://rubygems.org/gems/sidekiq_alive)
-[![Total Downloads](https://img.shields.io/gem/dt/sidekiq_alive?color=blue)](https://rubygems.org/gems/https://rubygems.org/gems/sidekiq_alive)
-![Workflow status](https://github.com/allure-framework/allure-ruby/workflows/Test/badge.svg)
-
----
+[![GitHub license](https://img.shields.io/github/license/jbox-web/sidekiq_alive.svg)](https://github.com/jbox-web/sidekiq_alive/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/jbox-web/sidekiq_alive.svg)](https://github.com/jbox-web/sidekiq_alive/releases/latest)
+[![CI](https://github.com/jbox-web/sidekiq_alive/workflows/CI/badge.svg)](https://github.com/jbox-web/sidekiq_alive/actions)
+[![Code Climate](https://codeclimate.com/github/jbox-web/sidekiq_alive/badges/gpa.svg)](https://codeclimate.com/github/jbox-web/sidekiq_alive)
+[![Test Coverage](https://codeclimate.com/github/jbox-web/sidekiq_alive/badges/coverage.svg)](https://codeclimate.com/github/jbox-web/sidekiq_alive/coverage)
 
 SidekiqAlive offers a solution to add liveness probe for a Sidekiq instance deployed in Kubernetes.
 This library can be used to check sidekiq health outside kubernetes.
