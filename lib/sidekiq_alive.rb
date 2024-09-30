@@ -1,14 +1,18 @@
 # frozen_string_literal: true
 
+# require ruby dependencies
 require 'singleton'
 
+# require external dependencies
 require 'rackup'
 require 'sidekiq'
 require 'sidekiq/api'
-
 require 'zeitwerk'
-loader = Zeitwerk::Loader.for_gem
-loader.setup
+
+# load zeitwerk
+Zeitwerk::Loader.for_gem.tap do |loader| # rubocop:disable Style/SymbolProc
+  loader.setup
+end
 
 module SidekiqAlive # rubocop:disable Metrics/ModuleLength
   HOSTNAME_REGISTRY = 'sidekiq-alive-hostnames'
