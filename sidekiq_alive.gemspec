@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 3.0.0'
 
-  s.files = Dir['README.md', 'lib/**/*']
+  s.files = Dir['README.md', 'LICENSE', 'lib/**/*.rb']
 
   s.add_dependency('rack', '>= 2.2.4')
   s.add_dependency('rackup')
