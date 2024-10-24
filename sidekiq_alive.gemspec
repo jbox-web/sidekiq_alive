@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
     'bug_tracker_uri' => "#{s.homepage}/issues",
   }
 
-  s.required_ruby_version = '>= 3.0.0'
+  s.required_ruby_version = '>= 3.1.0'
 
   s.files = Dir['README.md', 'LICENSE', 'lib/**/*.rb']
 
@@ -29,5 +29,5 @@ Gem::Specification.new do |s|
   s.add_dependency('rackup')
   s.add_dependency('sidekiq', '>= 5', '< 8')
   s.add_dependency('webrick', '>= 1', '< 2')
-  s.add_dependency('zeitwerk')
+  s.add_dependency('zeitwerk', '~> 2.6.0')
 end
