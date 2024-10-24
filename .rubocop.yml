@@ -26,6 +26,9 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
 
+Naming/BlockForwarding:
+  EnforcedStyle: explicit
+
 ##########
 # LAYOUT #
 ##########
