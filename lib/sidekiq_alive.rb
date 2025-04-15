@@ -14,23 +14,19 @@ Zeitwerk::Loader.for_gem.tap do |loader| # rubocop:disable Style/SymbolProc
   loader.setup
 end
 
-module SidekiqAlive # rubocop:disable Metrics/ModuleLength
+module SidekiqAlive
   HOSTNAME_REGISTRY = 'sidekiq-alive-hostnames'
   CAPSULE_NAME = 'sidekiq-alive'
 
   class << self
     def start # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      Sidekiq.configure_server do |sq_config| # rubocop:disable Metrics/BlockLength
+      Sidekiq.configure_server do |sq_config|
         sq_config.on(:startup) do
           SidekiqAlive::Worker.sidekiq_options(queue: current_queue)
 
-          if Helpers.sidekiq_7
-            sq_config.capsule(CAPSULE_NAME) do |cap|
-              cap.concurrency = 2
-              cap.queues = [current_queue]
-            end
-          else
-            (sq_config.respond_to?(:[]) ? sq_config[:queues] : sq_config.options[:queues]).unshift(current_queue)
+          sq_config.capsule(CAPSULE_NAME) do |cap|
+            cap.concurrency = 2
+            cap.queues = [current_queue]
           end
 
           logger.info(startup_info)
@@ -81,14 +77,9 @@ module SidekiqAlive # rubocop:disable Metrics/ModuleLength
       redis.zrange(HOSTNAME_REGISTRY, 0, -1)
     end
 
-    def purge_pending_jobs # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def purge_pending_jobs
       schedule_set = Sidekiq::ScheduledSet.new
-      jobs =
-        if Helpers.sidekiq_5
-          schedule_set.select { |job| job.klass == 'SidekiqAlive::Worker' && job.queue == current_queue }
-        else
-          schedule_set.scan('"class":"SidekiqAlive::Worker"').select { |job| job.queue == current_queue }
-        end
+      jobs = schedule_set.scan('"class":"SidekiqAlive::Worker"').select { |job| job.queue == current_queue }
 
       logger.info("[SidekiqAlive] Purging #{jobs.count} pending for #{hostname}")
       jobs.each(&:delete)

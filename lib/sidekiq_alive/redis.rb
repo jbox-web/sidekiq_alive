@@ -4,7 +4,7 @@ module SidekiqAlive
   module Redis
     class << self
       def adapter
-        Helpers.sidekiq_7 ? Redis::RedisClientGem.new : Redis::RedisGem.new
+        Redis::RedisClientGem.new
       end
     end
   end

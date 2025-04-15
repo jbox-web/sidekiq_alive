@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency('rack', '>= 2.2.4')
   s.add_dependency('rackup')
-  s.add_dependency('sidekiq', '>= 5', '< 9')
+  s.add_dependency('sidekiq', '>= 7', '< 9')
   s.add_dependency('webrick', '>= 1', '< 2')
   s.add_dependency('zeitwerk', '~> 2.6.0')
 end

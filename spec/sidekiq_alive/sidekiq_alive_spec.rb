@@ -84,22 +84,15 @@ RSpec.describe SidekiqAlive do
   end
 
   context 'with redis' do
-    let(:sidekiq_7) { SidekiqAlive::Helpers.sidekiq_7 } # rubocop:disable Naming/VariableNumber
     # Older versions of sidekiq yielded Sidekiq module as configuration object
     # With sidekiq > 7, configuration is a separate class
-    let(:sq_config) { sidekiq_7 ? Sidekiq.default_configuration : Sidekiq }
+    let(:sq_config) { Sidekiq.default_configuration }
 
     before do
       allow(Sidekiq).to receive(:server?).and_return(true)
       allow(sq_config).to(receive(:on))
 
-      if sidekiq_7
-        allow(sq_config).to(receive(:capsule).and_call_original)
-      elsif sq_config.respond_to?(:[])
-        allow(sq_config).to(receive(:[]).and_call_original)
-      else
-        allow(sq_config).to(receive(:options).and_call_original)
-      end
+      allow(sq_config).to(receive(:capsule).and_call_original)
     end
 
     it '::store_alive_key" stores key with the expected ttl' do
@@ -126,11 +119,7 @@ RSpec.describe SidekiqAlive do
 
     describe '::start' do
       let(:queue_prefix) { :heathcheck }
-      let(:queues) do
-        next Sidekiq.default_configuration.capsules[SidekiqAlive::CAPSULE_NAME].queues if sidekiq_7
-
-        sq_config.options[:queues]
-      end
+      let(:queues) { Sidekiq.default_configuration.capsules[SidekiqAlive::CAPSULE_NAME].queues }
 
       before do
         allow(described_class).to(receive(:fork).and_return(1))
