@@ -32,6 +32,8 @@ RSpec.configure do |config|
   # see: https://relishapp.com/rspec/rspec-core/v/3-8/docs/configuration/zero-monkey-patching-mode
   config.disable_monkey_patching!
 
+  config.raise_errors_for_deprecations!
+
   config.before do
     Sidekiq.redis(&:flushall)
     SidekiqAlive.config.set_defaults
