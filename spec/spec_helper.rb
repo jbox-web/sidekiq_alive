@@ -16,19 +16,21 @@ ENV['HOSTNAME'] = 'test-hostname'
 
 Sidekiq.logger.level = Logger::ERROR
 
+# Configure RSpec
 RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = '.rspec_status'
+  config.color = true
+  config.fail_fast = false
 
-  # Disable RSpec exposing methods globally on `Module` and `main`
-  config.disable_monkey_patching!
+  config.order = :random
+  Kernel.srand config.seed
 
-  config.expect_with(:rspec) do |c|
+  config.expect_with :rspec do |c|
     c.syntax = :expect
   end
 
-  config.order = :random
-  Kernel.srand(config.seed)
+  # disable monkey patching
+  # see: https://relishapp.com/rspec/rspec-core/v/3-8/docs/configuration/zero-monkey-patching-mode
+  config.disable_monkey_patching!
 
   config.before do
     Sidekiq.redis(&:flushall)
