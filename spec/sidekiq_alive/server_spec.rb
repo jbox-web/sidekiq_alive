@@ -45,10 +45,11 @@ RSpec.describe(SidekiqAlive::Server) do
       expect(last_response.body).to(eq('Alive!'))
     end
 
-    it 'responds with an error when the service is not alive' do
+    it 'responds with a 503 error when the service is not alive' do
       allow(SidekiqAlive).to(receive(:alive?).and_return(false))
       get '/'
       expect(last_response).not_to(be_ok)
+      expect(last_response.status).to(eq(503))
       expect(last_response.body).to(eq("Can't find the alive key"))
     end
 

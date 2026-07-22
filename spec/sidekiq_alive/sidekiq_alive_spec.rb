@@ -117,6 +117,12 @@ RSpec.describe SidekiqAlive do
       expect(described_class.alive?).to(be(true))
     end
 
+    it '::current_instance_registered?' do
+      expect(described_class.current_instance_registered?).to(be(false))
+      described_class.register_current_instance
+      expect(described_class.current_instance_registered?).to(be(true))
+    end
+
     describe '::start' do
       let(:queue_prefix) { :heathcheck }
       let(:queues) { Sidekiq.default_configuration.capsules[SidekiqAlive::CAPSULE_NAME].queues }

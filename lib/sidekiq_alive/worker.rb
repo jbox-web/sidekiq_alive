@@ -8,13 +8,20 @@ module SidekiqAlive
 
     # Passing the hostname argument it's only for debugging enqueued jobs
     def perform(_hostname = SidekiqAlive.hostname)
-      # Checks if custom liveness probe passes should fail or return false
-      return unless config.custom_liveness_probe.call
-
-      # Writes the liveness in Redis
-      write_living_probe
+      # A failing probe (returning false/nil or raising) must not write the key,
+      # but it must NOT stop the heartbeat: we always reschedule in `ensure` so
+      # the loop self-heals once the probe recovers, without needing a restart.
+      write_living_probe if probe_passing?
+    ensure
       # schedules next living probe
-      self.class.perform_in(config.time_to_live / 2, current_hostname)
+      self.class.perform_in(reschedule_interval, current_hostname)
+    end
+
+    def probe_passing?
+      config.custom_liveness_probe.call
+    rescue StandardError => e
+      SidekiqAlive.logger.warn("[SidekiqAlive] custom liveness probe raised: #{e.message}")
+      false
     end
 
     def write_living_probe
@@ -25,9 +32,15 @@ module SidekiqAlive
       # after callbacks
       begin
         config.callback.call
-      rescue StandardError
-        nil
+      rescue StandardError => e
+        SidekiqAlive.logger.warn("[SidekiqAlive] callback raised: #{e.message}")
       end
+    end
+
+    # Floored to 1s: integer division of a small time_to_live can yield 0,
+    # which would requeue the worker in a tight loop hammering Redis.
+    def reschedule_interval
+      [config.time_to_live / 2, 1].max
     end
 
     def current_hostname

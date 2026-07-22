@@ -14,7 +14,7 @@ This library can be used to check sidekiq health outside kubernetes.
 A http server is started and on each requests validates that a liveness key is stored in Redis. If it is there means is working.
 
 A Sidekiq worker is the responsible to storing this key. If Sidekiq stops processing workers
-this key gets expired by Redis an consequently the http server will return a 500 error.
+this key gets expired by Redis an consequently the http server will return a 503 error.
 
 This worker is responsible to requeue itself for the next liveness probe.
 
@@ -273,7 +273,7 @@ end
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/bundle install` to install dependencies. Then, run `bin/rspec` to run the tests (a running Redis on `localhost:6379` is required).
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 

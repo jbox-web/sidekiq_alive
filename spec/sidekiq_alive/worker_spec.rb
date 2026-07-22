@@ -18,8 +18,10 @@ RSpec.describe(SidekiqAlive::Worker) do
   end
 
   context 'when using custom liveness probe' do
-    it 'on error' do # rubocop:disable RSpec/ExampleLength
-      expect(described_class).not_to(receive(:perform_in))
+    it 'on error' do
+      # A raising probe must not write the key, but must still reschedule so
+      # the heartbeat loop recovers on its own once the probe stops raising.
+      expect(described_class).to(receive(:perform_in))
 
       n = 0
       SidekiqAlive.config.custom_liveness_probe = proc do
@@ -27,13 +29,18 @@ RSpec.describe(SidekiqAlive::Worker) do
         raise 'Nop'
       end
 
-      begin
-        worker
-      rescue StandardError
-        nil
-      end
+      worker
 
       expect(n).to(eq(2))
+      expect(SidekiqAlive.alive?).to(be(false))
+    end
+
+    it 'on returning false does not write the key but still reschedules' do
+      expect(described_class).to(receive(:perform_in))
+      SidekiqAlive.config.custom_liveness_probe = proc { false }
+
+      worker
+
       expect(SidekiqAlive.alive?).to(be(false))
     end
 

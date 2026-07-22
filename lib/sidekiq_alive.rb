@@ -47,9 +47,7 @@ module SidekiqAlive
         end
 
         sq_config.on(:shutdown) do
-          Process.kill('TERM', @server_pid) unless @server_pid.nil?
-          Process.wait(@server_pid) unless @server_pid.nil?
-
+          terminate_server
           unregister_current_instance
           config.shutdown_callback.call
         end
@@ -58,6 +56,15 @@ module SidekiqAlive
 
     def current_queue
       "#{config.queue_prefix}-#{hostname}"
+    end
+
+    def terminate_server
+      return if @server_pid.nil?
+
+      Process.kill('TERM', @server_pid)
+      Process.wait(@server_pid)
+    rescue Errno::ESRCH, Errno::ECHILD
+      # Child already gone: nothing to reap, keep tearing down cleanly.
     end
 
     def register_current_instance
@@ -93,7 +100,9 @@ module SidekiqAlive
     end
 
     def current_instance_registered?
-      redis.get(current_instance_register_key)
+      # The register key is stored as a member of the HOSTNAME_REGISTRY sorted
+      # set (via zadd), never as a plain string key, so membership is the check.
+      registered_instances.include?(current_instance_register_key)
     end
 
     def store_alive_key

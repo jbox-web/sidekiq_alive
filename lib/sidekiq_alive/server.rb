@@ -35,7 +35,7 @@ module SidekiqAlive
         else
           response = "Can't find the alive key"
           SidekiqAlive.logger.error(response)
-          [404, {}, [response]]
+          [503, {}, [response]]
         end
       end
     end
