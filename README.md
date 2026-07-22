@@ -268,6 +268,16 @@ SidekiqAlive.setup do |config|
   # default: 'webrick'
   #
   #    config.server = 'puma'
+
+  # ==> TLS
+  # Serve the liveness endpoint over HTTPS instead of plain HTTP. Set BOTH the
+  # certificate and the private key (PEM files) to enable it. TLS is only
+  # supported with the 'webrick' server; enabling it with any other server
+  # raises an error at startup instead of silently serving plaintext.
+  # default: nil (plain HTTP)
+  #
+  #    config.tls_cert_file = '/path/to/server.crt'
+  #    config.tls_key_file  = '/path/to/server.key'
 end
 ```
 

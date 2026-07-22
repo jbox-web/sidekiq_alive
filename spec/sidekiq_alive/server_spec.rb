@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'openssl'
+require 'tempfile'
 
 RSpec.describe(SidekiqAlive::Server) do
   include Rack::Test::Methods
@@ -124,6 +126,93 @@ RSpec.describe(SidekiqAlive::Server) do
       allow(SidekiqAlive).to(receive(:alive?).and_return(true))
       get '/sidekiq-probe'
       expect(last_response).to(be_ok)
+    end
+  end
+
+  describe 'TLS' do
+    let(:tls_key) { OpenSSL::PKey::RSA.new(2048) }
+
+    let(:tls_cert) do
+      cert = OpenSSL::X509::Certificate.new
+      cert.version = 2
+      cert.serial = 1
+      cert.subject = OpenSSL::X509::Name.parse('/CN=sidekiq-alive-test')
+      cert.issuer = cert.subject
+      cert.public_key = tls_key.public_key
+      cert.not_before = Time.now
+      cert.not_after = Time.now + 3600
+      cert.sign(tls_key, OpenSSL::Digest.new('SHA256'))
+      cert
+    end
+
+    let(:cert_file) { Tempfile.new(['cert', '.pem']).tap { |f| f.write(tls_cert.to_pem) }.tap(&:close) }
+    let(:key_file) { Tempfile.new(['key', '.pem']).tap { |f| f.write(tls_key.to_pem) }.tap(&:close) }
+
+    after do
+      cert_file.unlink
+      key_file.unlink
+    end
+
+    describe '.tls_enabled?' do
+      it 'is false when no cert/key is configured' do
+        expect(described_class).not_to(be_tls_enabled)
+      end
+
+      it 'is true when both cert and key are configured' do
+        SidekiqAlive.config.tls_cert_file = cert_file.path
+        SidekiqAlive.config.tls_key_file = key_file.path
+        expect(described_class).to(be_tls_enabled)
+      end
+
+      it 'is false when only one of cert/key is configured' do
+        SidekiqAlive.config.tls_cert_file = cert_file.path
+        expect(described_class).not_to(be_tls_enabled)
+      end
+    end
+
+    describe '.tls_options' do
+      before do
+        SidekiqAlive.config.tls_cert_file = cert_file.path
+        SidekiqAlive.config.tls_key_file = key_file.path
+      end
+
+      it 'builds the webrick SSL options from the cert/key files' do
+        options = described_class.tls_options
+        expect(options[:SSLEnable]).to(be(true))
+        expect(options[:SSLCertificate]).to(be_a(OpenSSL::X509::Certificate))
+        expect(options[:SSLPrivateKey]).to(be_a(OpenSSL::PKey::PKey))
+      end
+
+      it 'reads a non-RSA (EC) private key without assuming the key type' do
+        ec_key_file = Tempfile.new(['ec_key', '.pem'])
+        ec_key_file.write(OpenSSL::PKey::EC.generate('prime256v1').to_pem)
+        ec_key_file.close
+        SidekiqAlive.config.tls_key_file = ec_key_file.path
+
+        expect(described_class.tls_options[:SSLPrivateKey]).to(be_a(OpenSSL::PKey::EC))
+      ensure
+        ec_key_file.unlink
+      end
+
+      it 'fails fast on an unsupported server instead of serving plaintext' do
+        SidekiqAlive.config.server = 'puma'
+        expect { described_class.tls_options }.to(raise_error(ArgumentError, /only supported with.*webrick/i))
+      end
+    end
+
+    describe '.run! with TLS' do
+      let(:fake_webrick) { double }
+
+      before do
+        allow(Rackup::Handler).to(receive(:get).with('webrick').and_return(fake_webrick))
+        SidekiqAlive.config.tls_cert_file = cert_file.path
+        SidekiqAlive.config.tls_key_file = key_file.path
+      end
+
+      it 'passes the SSL options to the handler' do
+        expect(fake_webrick).to(receive(:run).with(described_class, hash_including(SSLEnable: true)))
+        described_class.run!
+      end
     end
   end
 end

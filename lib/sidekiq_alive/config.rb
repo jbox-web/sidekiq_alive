@@ -15,7 +15,9 @@ module SidekiqAlive
                   :server,
                   :custom_liveness_probe,
                   :logger,
-                  :shutdown_callback
+                  :shutdown_callback,
+                  :tls_cert_file,
+                  :tls_key_file
 
     def initialize
       set_defaults
@@ -33,6 +35,8 @@ module SidekiqAlive
       @server = ENV.fetch('SIDEKIQ_ALIVE_SERVER', 'webrick')
       @custom_liveness_probe = proc { true }
       @shutdown_callback = proc {}
+      @tls_cert_file = nil
+      @tls_key_file = nil
     end
 
     def registration_ttl
