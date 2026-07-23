@@ -54,4 +54,18 @@ RSpec.describe(SidekiqAlive::Worker) do
       expect(SidekiqAlive.alive?).to(be(true))
     end
   end
+
+  context 'when the after callback raises' do
+    it 'logs a warning, writes the key and still reschedules' do
+      # A raising after-callback must not abort the heartbeat: the key is still
+      # written and the worker still reschedules, the error is only logged.
+      expect(described_class).to(receive(:perform_in))
+      SidekiqAlive.config.callback = proc { raise 'boom' }
+
+      expect(SidekiqAlive.logger).to(receive(:warn).with(/callback raised: boom/))
+
+      expect { worker }.not_to(raise_error)
+      expect(SidekiqAlive.alive?).to(be(true))
+    end
+  end
 end

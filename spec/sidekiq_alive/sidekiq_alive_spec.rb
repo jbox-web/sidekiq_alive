@@ -157,6 +157,28 @@ RSpec.describe SidekiqAlive do
 
         expect(queues.first).to(eq("#{queue_prefix}-test-hostname"))
       end
+
+      it '::terminate_server unregisters and reaps the forked server on shutdown' do
+        # fork is stubbed to return 1, so @server_pid == 1: guard against firing
+        # a real TERM at PID 1 by stubbing Process.kill/Process.wait.
+        allow(sq_config).to(receive(:on).with(:shutdown).and_yield)
+        expect(Process).to(receive(:kill).with('TERM', 1))
+        expect(Process).to(receive(:wait).with(1))
+
+        described_class.start
+
+        expect(described_class.registered_instances.count).to(eq(0))
+      end
+    end
+
+    describe '::terminate_server' do
+      it 'returns early when no server was forked' do
+        described_class.instance_variable_set(:@server_pid, nil)
+
+        expect(Process).not_to(receive(:kill))
+
+        expect { described_class.terminate_server }.not_to(raise_error)
+      end
     end
   end
 end
