@@ -33,7 +33,7 @@ The three moving parts:
 
 - **`Worker`** (`worker.rb`) — a `Sidekiq::Worker` with `retry: false`. On `perform` it checks `config.custom_liveness_probe`, rewrites the liveness key (`store_alive_key`), refreshes the instance registration, runs `config.callback`, then re-schedules itself at `time_to_live / 2`. This self-requeue loop is what keeps the key alive.
 - **`Server`** (`server.rb`) — a Rack app served by Rackup (`webrick` by default, `puma` configurable via `SIDEKIQ_ALIVE_SERVER`). `call` returns 200 only when the request path matches `config.path` **and** `SidekiqAlive.alive?` (Redis TTL check). Optional TLS via `tls_cert_file` / `tls_key_file` (webrick only).
-- **`Redis` adapter** (`redis.rb` + `redis/`) — `Redis.adapter` returns a `RedisClientGem` instance (the `redis-client` gem used by Sidekiq 7+). `Base` defines the interface; `RedisGem` is the legacy `redis`-gem wrapper. All Redis access goes through the capsule's connection pool (`(@capsule || Sidekiq).redis`). Add new Redis operations to `Base` and both adapters.
+- **`Redis` adapter** (`redis.rb` + `redis/`) — `Redis.adapter` returns a `RedisClientGem` instance (the `redis-client` gem used by Sidekiq 7+); `Base` defines the interface it implements. All Redis access goes through the capsule's connection pool (`(@capsule || Sidekiq).redis`). Add new Redis operations to both `Base` and `RedisClientGem`.
 
 **Two Redis key structures:**
 - Liveness keys: `SIDEKIQ::LIVENESS_PROBE_TIMESTAMP::<hostname>`, a plain key with `EX = time_to_live`.
