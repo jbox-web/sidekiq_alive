@@ -11,7 +11,7 @@ module SidekiqAlive
         options = { Port: port, Host: host, AccessLog: [], Logger: SidekiqAlive.logger }
         options.merge!(tls_options) if tls_enabled?
 
-        handler.run(self, options)
+        handler.run(self, **options)
       end
 
       def host

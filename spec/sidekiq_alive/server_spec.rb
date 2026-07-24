@@ -9,17 +9,36 @@ RSpec.describe(SidekiqAlive::Server) do
 
   subject(:app) { described_class }
 
+  # Mirrors the real Rackup handler signature (`run(app, **options)`). An RSpec
+  # double cannot tell a positional Hash from keyword arguments, so it would let
+  # a `handler.run(self, options)` regression through.
+  def fake_handler_class
+    Class.new do
+      class << self
+        attr_reader :app, :options
+
+        def run(app, **options)
+          @app = app
+          @options = options
+        end
+
+        def shutdown; end
+      end
+    end
+  end
+
   describe '#run!' do
     subject(:app_run) { app.run! }
 
     before { allow(Rackup::Handler).to(receive(:get).with('webrick').and_return(fake_webrick)) }
 
-    let(:fake_webrick) { double }
+    let(:fake_webrick) { fake_handler_class }
 
     it 'runs the handler with sidekiq_alive logger, host and no access logs' do
-      expect(fake_webrick).to receive(:run).with(described_class, hash_including(Logger: SidekiqAlive.logger, Host: '0.0.0.0', AccessLog: []))
-
       app_run
+
+      expect(fake_webrick.app).to(eq(described_class))
+      expect(fake_webrick.options).to(include(Logger: SidekiqAlive.logger, Host: '0.0.0.0', AccessLog: []))
     end
 
     context 'when we change the host config' do
@@ -33,8 +52,9 @@ RSpec.describe(SidekiqAlive::Server) do
       end
 
       it 'respects the SIDEKIQ_ALIVE_HOST environment variable' do
-        expect(fake_webrick).to receive(:run).with(described_class, hash_including(Host: '1.2.3.4'))
         app_run
+
+        expect(fake_webrick.options).to(include(Host: '1.2.3.4'))
       end
     end
   end
@@ -201,7 +221,7 @@ RSpec.describe(SidekiqAlive::Server) do
     end
 
     describe '.run! with TLS' do
-      let(:fake_webrick) { double }
+      let(:fake_webrick) { fake_handler_class }
 
       before do
         allow(Rackup::Handler).to(receive(:get).with('webrick').and_return(fake_webrick))
@@ -210,8 +230,9 @@ RSpec.describe(SidekiqAlive::Server) do
       end
 
       it 'passes the SSL options to the handler' do
-        expect(fake_webrick).to(receive(:run).with(described_class, hash_including(SSLEnable: true)))
         described_class.run!
+
+        expect(fake_webrick.options).to(include(SSLEnable: true))
       end
     end
   end
