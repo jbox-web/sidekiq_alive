@@ -19,3 +19,6 @@ spec/dummy/tmp/
 
 # RSpec failure tracking
 .rspec_status
+
+# Ignore codegraph db
+/.codegraph
